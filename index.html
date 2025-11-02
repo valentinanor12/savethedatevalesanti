@@ -8,7 +8,7 @@
   </head>
   <body>
     <div class="container">
-      <div class="card-container" id="card">
+      <div class="card-container" id="card" role="button" tabindex="0" aria-label="Tarjeta: toca o presiona Enter para girar">
         <div class="card">
           <div class="front">
             <img src="2.png" alt="Save the Date" />
@@ -17,8 +17,11 @@
             <img src="7.png" alt="Reserva la fecha" />
           </div>
         </div>
+        <!-- Hint: texto sobre la tarjeta -->
+        <div class="hint" id="hint">Clic para girar</div>
       </div>
     </div>
+
     <script src="script.js"></script>
   </body>
 </html>
