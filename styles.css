@@ -136,6 +136,25 @@ html, body {
   }
 }
 
+/* Rotar 90° solo en móviles en orientación vertical */
+@media (max-width: 768px) and (orientation: portrait) {
+  .card-container {
+    /* Evita recortes: limita por alto de la pantalla y por ancho disponible */
+    width: min(92vh, calc(92vw * 1.41));
+    transform: rotate(90deg);
+    transform-origin: center center;
+    will-change: transform;
+  }
+}
+
+@supports (height: 100dvh) {
+  @media (max-width: 768px) and (orientation: portrait) {
+    .card-container {
+      width: min(92dvh, calc(92vw * 1.41));
+    }
+  }
+}
+
 @media (max-width: 480px) {
   .card-container {
     width: 94vw;
@@ -158,4 +177,3 @@ body {
     transition: none;
   }
 }
-
