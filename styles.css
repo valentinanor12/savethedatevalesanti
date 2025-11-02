@@ -38,6 +38,7 @@ html, body {
   position: relative;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  text-align: center;
 }
 
 /* ================== CARD ================== */
@@ -81,31 +82,38 @@ html, body {
 
 /* ================== HINT ================== */
 .hint {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 14px;
-  background: rgba(0,0,0,0.65);
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 18px;
+  position: static; /* debajo de la tarjeta */
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #6b5c4a;
+  border: 1px solid #e6ded3;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.hint::before {
+  content: "↺";
   font-size: 14px;
   line-height: 1;
-  z-index: 20;
-  pointer-events: none;
-  opacity: 1;
-  transition: opacity 250ms ease, transform 250ms ease;
+}
+
+.hint:hover {
+  transform: translateY(-1px);
+  background: #fffaf5;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 .hint.hidden {
-  opacity: 0;
-  transform: translateX(-50%) translateY(6px);
-  visibility: hidden;
-}
-
-.card-container:hover .hint {
-  opacity: 1;
-  visibility: visible;
+  display: none;
 }
 
 /* ================== FALLBACK PARA NAVEGADORES ANTIGUOS ================== */
@@ -162,7 +170,7 @@ html, body {
     transform: rotate(90deg) rotateY(180deg);
   }
   .hint {
-    transform: translateX(-50%);
+    transform: none;
   }
 }
 
@@ -185,6 +193,7 @@ html, body {
     transform-origin: center center;
   }
   .hint { transform: translateX(-50%); }
+  .hint { transform: none; }
 }
 
 @media (max-width: 480px) and (orientation: landscape) {
