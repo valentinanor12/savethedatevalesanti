@@ -2,6 +2,8 @@
 const cardContainer = document.getElementById("card");
 const cardEl = cardContainer.querySelector(".card");
 const hintEl = document.getElementById("hint");
+let audioPrimed = false;
+let audioStarted = false;
 
 function flipCard() {
   cardEl.classList.toggle("flip");
@@ -21,11 +23,25 @@ cardContainer.addEventListener("keydown", (e) => {
 
 // === Audio: intentar reproducir al cargar y mantener loop ===
 function ensureAudioStarted() {
+  if (audioStarted) return;
   const audio = document.getElementById("bgm");
   if (!audio) return;
-  audio.muted = false;
-  audio.play().catch(() => {});
-  localStorage.setItem("bgmAllowed", "1");
+
+  const start = () => {
+    audio.muted = false;
+    // Si aún no hay datos suficientes, espera canplay y reintenta
+    const playNow = () => audio.play().catch(() => {});
+    if (audio.readyState >= 2) {
+      playNow();
+    } else {
+      audio.addEventListener("canplay", playNow, { once: true });
+      try { audio.load(); } catch (_) {}
+    }
+    audioStarted = true;
+    localStorage.setItem("bgmAllowed", "1");
+  };
+
+  start();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -43,9 +59,12 @@ document.addEventListener("DOMContentLoaded", () => {
     audio.muted = false;
     audio.play().catch(() => {});
   } else {
-    // Reproduce en silencio si lo permite el navegador
+    // Prime en silencio para forzar buffering; así el primer gesto suena al instante
     audio.muted = true;
-    audio.play().catch(() => {});
+    if (!audioPrimed) {
+      audio.play().catch(() => {});
+      audioPrimed = true;
+    }
     // Siempre prepara el desmuteo en el primer gesto, aunque el autoplay haya funcionado en silencio
     const start = () => {
       ensureAudioStarted();
