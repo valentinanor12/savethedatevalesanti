@@ -22,8 +22,8 @@ body {
 .card-container {
   perspective: 1000px;
   width: 90%;
-  max-width: 600px;
-  height: 400px; /* <-- Esto es clave para que se vea */
+  max-width: 1200px;
+  height: 800px; /* <-- Esto es clave para que se vea */
   cursor: pointer;
 }
 
