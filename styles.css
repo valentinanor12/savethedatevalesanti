@@ -27,7 +27,8 @@ html, body {
 /* ================== CARD CONTAINER ================== */
 .card-container {
   perspective: 1000px;
-  width: min(92vw, 420px);
+  /* Más grande en desktop, fluido hasta un máximo cómodo */
+  width: clamp(320px, 50vw, 900px);
   height: auto;
   /* Coincide con 2.png y 7.png (≈1.41:1) */
   aspect-ratio: 141 / 100;
@@ -137,25 +138,56 @@ html, body {
 }
 
 /* Rotar 90° solo en móviles en orientación vertical */
-@media (max-width: 768px) and (orientation: portrait) {
+@media screen and (max-width: 768px) and (orientation: portrait) {
+  .container {
+    padding: 8px 0;
+    overflow: visible; /* evita cortar contenido rotado */
+  }
   .card-container {
-    /* Evita recortes: limita por alto de la pantalla y por ancho disponible */
-    width: min(92vh, calc(92vw * 1.41));
+    /* Ocupa el ancho del viewport y centra el contenido rotado */
+    width: 100vw;
+    margin: 0 auto;
+    display: grid;
+    place-items: center;
+  }
+  .card {
+    /* Máximo tamaño sin recorte con pequeño margen de seguridad */
+    height: min(calc(100vw - 12px), calc((100vh - 12px) / 1.41));
+    width: calc(min(calc(100vw - 12px), calc((100vh - 12px) / 1.41)) * 1.41);
     transform: rotate(90deg);
     transform-origin: center center;
-    will-change: transform;
+  }
+  /* Al girar la tarjeta, conserva la rotación de 90° */
+  .card.flip {
+    transform: rotate(90deg) rotateY(180deg);
+  }
+  .hint {
+    transform: translateX(-50%);
   }
 }
 
+/* Unidades modernas para iOS/Android modernos */
 @supports (height: 100dvh) {
-  @media (max-width: 768px) and (orientation: portrait) {
-    .card-container {
-      width: min(92dvh, calc(92vw * 1.41));
+  @media screen and (max-width: 768px) and (orientation: portrait) {
+    .card {
+      height: min(calc(100vw - 12px), calc((100dvh - 12px) / 1.41));
+      width: calc(min(calc(100vw - 12px), calc((100dvh - 12px) / 1.41)) * 1.41);
     }
   }
 }
 
-@media (max-width: 480px) {
+/* Fallback adicional para algunos Safari iOS (max-device-width) */
+@media screen and (max-device-width: 812px) and (orientation: portrait) {
+  .card {
+    height: min(calc(100vw - 12px), calc((100vh - 12px) / 1.41));
+    width: calc(min(calc(100vw - 12px), calc((100vh - 12px) / 1.41)) * 1.41);
+    transform: rotate(90deg);
+    transform-origin: center center;
+  }
+  .hint { transform: translateX(-50%); }
+}
+
+@media (max-width: 480px) and (orientation: landscape) {
   .card-container {
     width: 94vw;
   }
