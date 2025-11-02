@@ -6,6 +6,8 @@ const hintEl = document.getElementById("hint");
 function flipCard() {
   cardEl.classList.toggle("flip");
   if (hintEl) hintEl.classList.add("hidden");
+  // En el primer gesto, asegúrate de desmutear y reproducir
+  ensureAudioStarted();
 }
 
 cardContainer.addEventListener("click", flipCard);
@@ -18,27 +20,35 @@ cardContainer.addEventListener("keydown", (e) => {
 });
 
 // === Audio: intentar reproducir al cargar y mantener loop ===
+function ensureAudioStarted() {
+  const audio = document.getElementById("bgm");
+  if (!audio) return;
+  audio.muted = false;
+  audio.play().catch(() => {});
+  localStorage.setItem("bgmAllowed", "1");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const audio = document.getElementById("bgm");
   if (!audio) return;
 
   // Volumen inicial suave y bucle
   const savedVol = parseFloat(localStorage.getItem("bgmVolume"));
-  audio.volume = Number.isFinite(savedVol) ? Math.max(0, Math.min(savedVol, 1)) : 0.4;
+  audio.volume = Number.isFinite(savedVol) ? Math.max(0, Math.min(savedVol, 1)) : 0.35;
   audio.loop = true;
 
   const hadConsent = localStorage.getItem("bgmAllowed") === "1";
-  // Para maximizar compatibilidad, si no hay consentimiento previo arrancamos en mute
-  audio.muted = !hadConsent;
-
-  const markAllowed = () => localStorage.setItem("bgmAllowed", "1");
-
-  function startOnGestureOnce() {
+  if (hadConsent) {
+    // Intento directo con sonido
+    audio.muted = false;
+    audio.play().catch(() => {});
+  } else {
+    // Reproduce en silencio si lo permite el navegador
+    audio.muted = true;
+    audio.play().catch(() => {});
+    // Siempre prepara el desmuteo en el primer gesto, aunque el autoplay haya funcionado en silencio
     const start = () => {
-      audio.muted = false;
-      audio.play().finally(() => {
-        if (!audio.paused) markAllowed();
-      });
+      ensureAudioStarted();
       window.removeEventListener("pointerdown", start, true);
       window.removeEventListener("keydown", start, true);
       window.removeEventListener("touchstart", start, true);
@@ -47,17 +57,4 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("keydown", start, { once: true, capture: true });
     window.addEventListener("touchstart", start, { once: true, capture: true });
   }
-
-  async function tryAutoplay() {
-    try {
-      await audio.play();
-      markAllowed();
-    } catch (err) {
-      // Autoplay bloqueado por políticas del navegador: espera primer gesto
-      startOnGestureOnce();
-    }
-  }
-
-  // Intenta reproducir siempre; si falla, arranca con el primer gesto
-  tryAutoplay();
 });
