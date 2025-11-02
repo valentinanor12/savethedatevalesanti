@@ -13,26 +13,34 @@ body {
 }
 
 .container {
-  height: 100%;
+  /* usar min-height para que el contenido pueda crecer en móviles */
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 16px;
 }
 
+/* Cambios: eliminar alto fijo y usar aspect-ratio + max-height para responsive */
 .card-container {
   perspective: 1000px;
   width: 90%;
   max-width: 1200px;
-  height: 800px; /* <-- Esto es clave para que se vea */
+  height: auto;               /* eliminado height fijo */
+  aspect-ratio: 3 / 4;        /* mantiene proporción en pantallas modernas */
+  max-height: 90vh;           /* no sobresalga del viewport en móviles */
+  margin: 0 auto;
   cursor: pointer;
+  position: relative;
 }
+
 
 .card {
   width: 100%;
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 1s;
+  transition: transform 0.7s;
 }
 
 .card.flip {
@@ -58,4 +66,34 @@ body {
 
 .back {
   transform: rotateY(180deg);
+}
+
+/* Fallback para navegadores sin soporte de aspect-ratio */
+@supports not (aspect-ratio: 1 / 1) {
+  .card-container {
+    /* permitir que el contenedor escale, con límites razonables */
+    min-height: 320px;
+    max-height: 90vh;
+  }
+}
+
+/* Ajustes específicos para pantallas pequeñas */
+@media (max-width: 600px) {
+  .container {
+    padding: 12px;
+    align-items: flex-start;
+  }
+  .card-container {
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 3 / 4;
+  }
+  .card {
+    transition: transform 0.6s;
+    transform-origin: center;
+  }
+  .card img {
+    object-fit: cover;
+    object-position: center;
+  }
 }
